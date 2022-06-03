@@ -409,7 +409,7 @@ export default class extends Component {
   onScrollEnd = e => {
     // update scroll state
     this.internals.isScrolling = false
-
+    console.log('before index ??? ', this.state.index);
     // making our events coming from android compatible to updateIndex logic
     if (!e.nativeEvent.contentOffset) {
       if (this.state.dir === 'x') {
@@ -427,6 +427,7 @@ export default class extends Component {
       this.autoplay()
       this.loopJump()
     })
+
     // if `onMomentumScrollEnd` registered will be called here
     this.props.onMomentumScrollEnd &&
       this.props.onMomentumScrollEnd(e, this.fullState(), this)
@@ -487,7 +488,7 @@ export default class extends Component {
         loopJump = true
       }
     }
-
+    console.log('after index ??? ', index);
     const newState = {}
     newState.index = index
     newState.loopJump = loopJump
@@ -599,10 +600,10 @@ export default class extends Component {
  * @param  {bool} animated
  */
 
-  moveTo = (index, animated = true) => {
+  moveTo = async (index, animated = true) => {
 
     const state = this.state
-    const diff = this.state.index + (index - this.state.index)
+    const diff = this.state.index + (index - this.state.index) + 1
 
     let x = state.width * (index + 1)
     let y = 0
@@ -612,7 +613,7 @@ export default class extends Component {
     // update scroll state
     this.internals.isScrolling = true
     this.setState({
-      autoplayEnd: false
+      autoplayEnd: false,
     })
 
     // trigger onScrollEnd manually in android
