@@ -8,7 +8,7 @@ import {
 import { Component } from 'react'
 
 declare module 'react-native-swiper' {
-  interface SwiperState {
+  interface SwiperStates {
     autoplayEnd: false
     loopJump: false
     width: number
@@ -22,7 +22,7 @@ declare module 'react-native-swiper' {
     dir: 'x' | 'y'
   }
 
-  interface SwiperInternals extends SwiperState {
+  interface SwiperInternals extends SwiperStates {
     isScrolling: boolean
   }
 
@@ -140,8 +140,9 @@ declare module 'react-native-swiper' {
     scrollEnabled?: boolean
   }
 
-  export default class Swiper extends Component<SwiperProps, SwiperState> {
+  export default class Swiper extends Component<SwiperProps> {
     scrollBy: (index?: number, animated?: boolean) => void
     scrollTo: (index: number, animated?: boolean) => void
+    moveTo: (index: number, animated?: boolean) => void
   }
 }

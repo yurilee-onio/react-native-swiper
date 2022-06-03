@@ -284,7 +284,7 @@ export default class extends Component {
     }
 
     initState.offset[initState.dir] =
-      initState.dir === 'y' ? initState.height * props.index : initState.width * props.index
+      initState.dir === 'y' ? height * props.index : width * props.index
 
     this.internals = {
       ...this.internals,
@@ -321,11 +321,8 @@ export default class extends Component {
     // related to https://github.com/leecade/react-native-swiper/issues/570
     // contentOffset is not working in react 0.48.x so we need to use scrollTo
     // to emulate offset.
-    if(this.state.total > 1) {
+    if (this.initialRender && this.state.total > 1) {
       this.scrollView.scrollTo({ ...offset, animated: false })
-    }
-	
-    if (this.initialRender) {
       this.initialRender = false
     }
 
@@ -350,15 +347,15 @@ export default class extends Component {
           } else if (this.state.index === this.state.total - 1) {
             this.props.horizontal === false
               ? this.scrollView.scrollTo({
-                  x: 0,
-                  y: this.state.height * this.state.total,
-                  animated: false
-                })
+                x: 0,
+                y: this.state.height * this.state.total,
+                animated: false
+              })
               : this.scrollView.scrollTo({
-                  x: this.state.width * this.state.total,
-                  y: 0,
-                  animated: false
-                })
+                x: this.state.width * this.state.total,
+                y: 0,
+                animated: false
+              })
           }
         }
       },
@@ -467,7 +464,7 @@ export default class extends Component {
     if (!this.internals.offset)
       // Android not setting this onLayout first? https://github.com/leecade/react-native-swiper/issues/582
       this.internals.offset = {}
-    const diff = offset[dir] - (this.internals.offset[dir] || 0)
+    const diff = offset[dir] - this.internals.offset[dir]
     const step = dir === 'x' ? state.width : state.height
     let loopJump = false
 
@@ -575,6 +572,40 @@ export default class extends Component {
     let y = 0
     if (state.dir === 'x') x = diff * state.width
     if (state.dir === 'y') y = diff * state.height
+
+    this.scrollView && this.scrollView.scrollTo({ x, y, animated })
+
+    // update scroll state
+    this.internals.isScrolling = true
+    this.setState({
+      autoplayEnd: false
+    })
+
+    // trigger onScrollEnd manually in android
+    if (!animated || Platform.OS !== 'ios') {
+      setImmediate(() => {
+        this.onScrollEnd({
+          nativeEvent: {
+            position: diff
+          }
+        })
+      })
+    }
+  }
+
+  /**
+ * Scroll to index
+ * @param  {number} index page
+ * @param  {bool} animated
+ */
+
+  moveTo = (index, animated = true) => {
+
+    const state = this.state
+    const diff = this.state.index + (index - this.state.index)
+
+    let x = state.width * (index + 1)
+    let y = 0
 
     this.scrollView && this.scrollView.scrollTo({ x, y, animated })
 
